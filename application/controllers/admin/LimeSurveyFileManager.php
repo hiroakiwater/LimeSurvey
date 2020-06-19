@@ -661,7 +661,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
             }
 
             $sSystemDateFormat = getDateFormatData(Yii::app()->session['dateformat']);
-            $iFileTimeDate = filemtime($fileRealpath);
+            $iFileTimeDate = CommonStorage::filemtime($fileRealpath);
 
             $linkToImage = Yii::app()->getBaseUrl(true) . '/' . $folderPath . '/' . rawurlencode($file);
             $hash = hash_file('md5', $fileRealpath);

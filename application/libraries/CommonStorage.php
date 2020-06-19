@@ -21,7 +21,7 @@ class CommonStorage {
         
         public static function scandir($path) {
                 if (!Yii::app()->params['use_external_storage']) {
-                        return scandir($path);
+                        // return scandir($path);
                 }
 
                 $bucket_name = Yii::app()->params['bucket'];
@@ -72,14 +72,14 @@ class CommonStorage {
                         $type = $info['contentType'];
                 }
 
-                file_put_contents('/home/web/logs/test.log', "type: $type  \n", FILE_APPEND); 
+                // file_put_contents('/home/web/logs/test.log', "type: $type  \n", FILE_APPEND); 
 
                 return $type;
         }
 
         public static function filesize($file_name) {
                 if (!Yii::app()->params['use_external_storage']) {
-                        return filesize($path);
+                        return filesize($file_name);
                 }
 
                 $bucket_name = Yii::app()->params['bucket'];
@@ -98,9 +98,36 @@ class CommonStorage {
                         $size = $info['size'];
                 }
 
-                file_put_contents('/home/web/logs/test.log', "size: $size  \n", FILE_APPEND); 
+                // file_put_contents('/home/web/logs/test.log', "size: $size  \n", FILE_APPEND); 
 
                 return $size;
         }
-        
+
+        public static function filemtime($file_name) {
+                if (!Yii::app()->params['use_external_storage']) {
+                        return filemtime($file_name);
+                }
+
+                $bucket_name = Yii::app()->params['bucket'];
+
+                $storage = new StorageClient(array('keyFilePath' => Yii::app()->params['key_file_path']));
+                $storage_path = str_replace(dirname(Yii::app()->basePath) . DIRECTORY_SEPARATOR, '', $path);
+                $bucket = $storage->bucket($bucket_name);
+
+                $objects = $bucket->objects(array(
+                        'prefix' => $storage_path,
+                ));
+
+                $time = 0;
+                foreach ($objects as $object) {
+                        $info = $object->info();
+                        $time = $info['timeCreated'];
+                }
+
+                $date = DateTime::createFromFormat(DateTime::RFC3339_EXTENDED, $time);
+                $time = $date->format('U');
+
+                // file_put_contents('/home/web/logs/test.log', ":time: $time  \n", FILE_APPEND);
+                return $time;
+        }
 }
