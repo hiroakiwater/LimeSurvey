@@ -341,6 +341,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
             return;
         }
 
+        App()->loadLibrary('CommonStorage');
         
         if($ext == 'zip') {
             App()->loadLibrary('admin.pclzip');
@@ -367,6 +368,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
                 $this->throwError();
                 return;
             }
+            CommonStorage::upload_file($fullfilepath);
             $message = sprintf(gT("File %s uploaded"), $filename);
             $linkToImage = Yii::app()->baseUrl . '/' . $folder . '/' . $filename;
         }
@@ -620,6 +622,8 @@ class LimeSurveyFileManager extends Survey_Common_Action
      */
     private function collectFileList($folderPath)
     {
+        App()->loadLibrary('CommonStorage');
+
         $directoryArray = array();
 
         $realPath = dirname(Yii::app()->basePath) . DIRECTORY_SEPARATOR . $folderPath;
@@ -627,7 +631,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
             return $directoryArray;
         }
 
-        $files = scandir($realPath);
+        $files = CommonStorage::scandir($realPath);
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
         foreach ($files as $file) {
@@ -638,7 +642,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
             $fileRelativePath = $folderPath . DIRECTORY_SEPARATOR . $file;
             $fileRealpath = dirname(Yii::app()->basePath) . DIRECTORY_SEPARATOR . $fileRelativePath;
             $fileIsDirectoy = @is_dir($fileRealpath);
-            $isImage = strpos(finfo_file($finfo, $fileRealpath), 'image') !== false;
+            $isImage = strpos(CommonStorage::finfo_file($finfo, $fileRealpath), 'image') !== false;
             if ($fileIsDirectoy) {
                 continue;
             } else {
@@ -648,7 +652,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
                 }
 
                 $iconClassArray = LsDefaultDataSets::fileTypeIcons();
-                $size = filesize($fileRealpath);
+                $size = CommonStorage::filesize($fileRealpath);
                 if (isset($iconClassArray[$fileExt])) {
                     $iconClass = $iconClassArray[$fileExt];
                 } else {
@@ -657,7 +661,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
             }
 
             $sSystemDateFormat = getDateFormatData(Yii::app()->session['dateformat']);
-            $iFileTimeDate = filemtime($fileRealpath);
+            $iFileTimeDate = CommonStorage::filemtime($fileRealpath);
 
             $linkToImage = Yii::app()->getBaseUrl(true) . '/' . $folderPath . '/' . rawurlencode($file);
             $hash = hash_file('md5', $fileRealpath);
