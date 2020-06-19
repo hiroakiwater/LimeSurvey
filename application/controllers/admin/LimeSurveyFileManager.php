@@ -622,6 +622,8 @@ class LimeSurveyFileManager extends Survey_Common_Action
      */
     private function collectFileList($folderPath)
     {
+        App()->loadLibrary('CommonStorage');
+
         $directoryArray = array();
 
         $realPath = dirname(Yii::app()->basePath) . DIRECTORY_SEPARATOR . $folderPath;
@@ -629,7 +631,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
             return $directoryArray;
         }
 
-        $files = scandir($realPath);
+        $files = CommonStorage::scandir($realPath);
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
         foreach ($files as $file) {
