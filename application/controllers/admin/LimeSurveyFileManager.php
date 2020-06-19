@@ -642,7 +642,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
             $fileRelativePath = $folderPath . DIRECTORY_SEPARATOR . $file;
             $fileRealpath = dirname(Yii::app()->basePath) . DIRECTORY_SEPARATOR . $fileRelativePath;
             $fileIsDirectoy = @is_dir($fileRealpath);
-            $isImage = strpos(finfo_file($finfo, $fileRealpath), 'image') !== false;
+            $isImage = strpos(CommonStorage::finfo_file($finfo, $fileRealpath), 'image') !== false;
             if ($fileIsDirectoy) {
                 continue;
             } else {
@@ -652,7 +652,7 @@ class LimeSurveyFileManager extends Survey_Common_Action
                 }
 
                 $iconClassArray = LsDefaultDataSets::fileTypeIcons();
-                $size = filesize($fileRealpath);
+                $size = CommonStorage::filesize($fileRealpath);
                 if (isset($iconClassArray[$fileExt])) {
                     $iconClass = $iconClassArray[$fileExt];
                 } else {
